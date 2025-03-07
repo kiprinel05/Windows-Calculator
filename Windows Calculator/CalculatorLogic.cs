@@ -156,6 +156,23 @@ namespace WPFCalculator.Models
         {
             currentMode = mode;
         }
+        public void ClearEntry()
+        {
+            CurrentDisplay = "0";
+            _isNewInput = true;
+        }
+
+        public void Backspace()
+        {
+            if (CurrentDisplay.Length > 1)
+            {
+                CurrentDisplay = CurrentDisplay.Substring(0, CurrentDisplay.Length - 1);
+            }
+            else
+            {
+                CurrentDisplay = "0";
+            }
+        }
 
     }
 }
