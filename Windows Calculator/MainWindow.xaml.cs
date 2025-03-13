@@ -41,8 +41,80 @@ namespace WPFCalculator.Views
             InitializeComponent();
             GenerateStandardButtons();
             UpdateDisplay();
+            this.KeyDown += MainWindow_KeyDown; 
         }
 
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            string key = e.Key.ToString();
+
+            if (key.StartsWith("D") && key.Length == 2)
+            {
+                key = key.Substring(1);
+            }
+            else if (key == "OemPlus")
+            {
+                key = "+";
+            }
+            else if (key == "OemMinus")
+            {
+                key = "-";
+            }
+            else if (key == "OemQuestion")
+            {
+                key = "/";
+            }
+            else if (key == "Oem5")
+            {
+                key = "\\";
+            }
+            else if (key == "OemPeriod")
+            {
+                key = ".";
+            }
+            else if (key == "OemComma")
+            {
+                key = ",";
+            }
+            else if (key == "Multiply")
+            {
+                key = "*";
+            }
+            else if (key == "Add")
+            {
+                key = "+";
+            }
+            else if (key == "Subtract")
+            {
+                key = "-";
+            }
+            else if (key == "Divide")
+            {
+                key = "/";
+            }
+            else if (key == "Decimal")
+            {
+                key = ".";
+            }
+            else if (key == "Back")
+            {
+                key = "⌫";
+            }
+            else if (key == "Enter")
+            {
+                key = "=";
+            }
+            else if (key == "Escape")
+            {
+                key = "C";
+            }
+            else
+            {
+                return;
+            }
+
+            Button_Click(new Button { Content = key }, new RoutedEventArgs());
+        }
         private void GenerateStandardButtons()
         {
             int rows = standardButtonsMatrix.GetLength(0);
@@ -94,9 +166,6 @@ namespace WPFCalculator.Views
         {
             return text == "+" || text == "-" || text == "*" || text == "/" || text == "=" || text == "MC" || text == "MR" || text == "M+" || text == "M-" || text == "x²" || text == "MS" || text == "M>" || text == "+/-" || text == "√";
         }
-
-
-
 
         private void GenerateProgrammerButtons()
         {
@@ -233,7 +302,12 @@ namespace WPFCalculator.Views
             }
             else
             {
+                if (calculator.LastActionWasOperator)
+                {
+                    return;
+                }
                 calculator.SetOperator(content);
+                calculator.LastActionWasOperator = true;
             }
         }
 

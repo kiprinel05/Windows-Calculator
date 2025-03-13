@@ -8,6 +8,8 @@ namespace WPFCalculator.Models
         private double _memoryValue = 0;
         private string _currentOperator = "";
         private bool _isNewInput = true;
+
+        public bool LastActionWasOperator { get; set; } = false;
         public string StoredValue { get; set; } = "0";
         private MemoryManager memoryManager = new MemoryManager();
         public string CurrentOperator { get; private set; } = "";
@@ -24,6 +26,7 @@ namespace WPFCalculator.Models
             {
                 CurrentDisplay += digit;
             }
+            LastActionWasOperator = false;
         }
 
         public void SetOperator(string op)
