@@ -8,6 +8,7 @@ namespace WPFCalculator.Models
         private double _memoryValue = 0;
         private string _currentOperator = "";
         private bool _isNewInput = true;
+        public string StoredValue { get; set; } = "0";
         private MemoryManager memoryManager = new MemoryManager();
         public string CurrentOperator { get; private set; } = "";
         public string CurrentDisplay { get; private set; } = "0";
@@ -173,6 +174,11 @@ namespace WPFCalculator.Models
                 CurrentDisplay = "0";
             }
         }
+        public void SetDisplay(string value)
+        {
+            CurrentDisplay = value;
+        }
+
 
     }
 }

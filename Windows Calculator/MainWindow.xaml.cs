@@ -13,7 +13,7 @@ namespace WPFCalculator.Views
         private CalculatorLogic calculator = new CalculatorLogic();
         private ProgrammerCalculator programmerCalculator = new ProgrammerCalculator();
         private bool isProgrammerMode = false;
-        private int currentBase = 10; // Baza implicită este DEC
+        private int currentBase = 10;
 
         private string[,] standardButtonsMatrix =
         {
@@ -35,6 +35,7 @@ namespace WPFCalculator.Views
             { "0", "(", ")", "=", "+" }
         };
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -51,20 +52,51 @@ namespace WPFCalculator.Views
             {
                 for (int j = 0; j < cols; j++)
                 {
+                    string buttonText = standardButtonsMatrix[i, j];
                     Button button = new Button
                     {
-                        Content = standardButtonsMatrix[i, j],
+                        Content = buttonText,
                         FontSize = 20,
-                        Margin = new Thickness(5)
+                        Margin = new Thickness(5),
+                        Foreground = Brushes.White
                     };
 
+                    SolidColorBrush backgroundColor = IsOperator(buttonText)
+                        ? new SolidColorBrush(Color.FromRgb(45, 51, 61))
+                        : new SolidColorBrush(Color.FromRgb(56, 59, 66));
+
+                    var borderFactory = new FrameworkElementFactory(typeof(Border));
+                    borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(10)); 
+                    borderFactory.SetValue(Border.BackgroundProperty, backgroundColor);
+
+                    var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
+                    contentPresenterFactory.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+                    contentPresenterFactory.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
+
+                    borderFactory.AppendChild(contentPresenterFactory);
+
+                    ControlTemplate buttonTemplate = new ControlTemplate(typeof(Button))
+                    {
+                        VisualTree = borderFactory
+                    };
+
+                    button.Template = buttonTemplate;
                     button.Click += Button_Click;
-                    Grid.SetRow(button, i + 1); // Adăugăm 1 pentru a face loc butoanelor suplimentare
+
+                    Grid.SetRow(button, i + 1);
                     Grid.SetColumn(button, j);
                     StandardButtonGrid.Children.Add(button);
                 }
             }
         }
+
+        private bool IsOperator(string text)
+        {
+            return text == "+" || text == "-" || text == "*" || text == "/" || text == "=" || text == "MC" || text == "MR" || text == "M+" || text == "M-" || text == "x²" || text == "MS" || text == "M>" || text == "+/-" || text == "√";
+        }
+
+
+
 
         private void GenerateProgrammerButtons()
         {
@@ -79,16 +111,47 @@ namespace WPFCalculator.Views
                     {
                         Content = programmerButtonsMatrix[i, j],
                         FontSize = 20,
-                        Margin = new Thickness(5)
+                        Margin = new Thickness(5),
+                        Background = new SolidColorBrush(Color.FromRgb(57, 59, 63)),
+                        Foreground = Brushes.White
                     };
 
                     button.Click += Button_Click;
+
+                    var borderFactory = new FrameworkElementFactory(typeof(Border));
+                    borderFactory.SetValue(Border.BackgroundProperty, new TemplateBindingExtension(Button.BackgroundProperty));
+                    borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(10)); 
+
+                    var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
+                    contentPresenterFactory.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+                    contentPresenterFactory.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
+
+                    borderFactory.AppendChild(contentPresenterFactory);
+
+                    var controlTemplate = new ControlTemplate(typeof(Button))
+                    {
+                        VisualTree = borderFactory
+                    };
+
+                    var hoverTrigger = new Trigger
+                    {
+                        Property = Button.IsMouseOverProperty,
+                        Value = true
+                    };
+
+                    hoverTrigger.Setters.Add(new Setter(Button.BackgroundProperty, new SolidColorBrush(Color.FromRgb(80, 80, 90))));
+                    hoverTrigger.Setters.Add(new Setter(Button.ForegroundProperty, Brushes.WhiteSmoke));
+
+                    controlTemplate.Triggers.Add(hoverTrigger);
+                    button.Template = controlTemplate;
+
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
                     ProgrammerButtonGrid.Children.Add(button);
                 }
             }
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -198,12 +261,63 @@ namespace WPFCalculator.Views
             }
             else
             {
-                // Logica pentru operații pe biți (AND, OR, XOR, NOT, shiftare biți, etc.)
+                string num1 = calculator.StoredValue;
+                string num2 = calculator.CurrentDisplay;
+
+                switch (content)
+                {
+                    case "AND":
+                        calculator.SetDisplay(programmerCalculator.BitwiseAND(num1, num2));
+                        break;
+                    case "OR":
+                        calculator.SetDisplay(programmerCalculator.BitwiseOR(num1, num2));
+                        break;
+                    case "XOR":
+                        calculator.SetDisplay(programmerCalculator.BitwiseXOR(num1, num2));
+                        break;
+                    case "NOT":
+                        calculator.SetDisplay(programmerCalculator.BitwiseNOT(num2));
+                        break;
+                    case "<<":
+                        calculator.SetDisplay(programmerCalculator.BitShiftLeft(num1, int.Parse(num2)));
+                        break;
+                    case ">>":
+                        calculator.SetDisplay(programmerCalculator.BitShiftRight(num1, int.Parse(num2)));
+                        break;
+                    case "Mod":
+                        calculator.SetDisplay((long.Parse(num1) % long.Parse(num2)).ToString());
+                        break;
+                    case "Rol":
+                        calculator.SetDisplay(BitwiseRotateLeft(num1, int.Parse(num2)));
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            UpdateDisplay();
+        }
+        private string BitwiseRotateLeft(string number, int shift)
+        {
+            if (long.TryParse(number, out long value))
+            {
+                int bitCount = (int)Math.Log(value, 2) + 1;
+                shift = shift % bitCount;
+                long result = (value << shift) | (value >> (bitCount - shift));
+                return result.ToString();
+            }
+            return "Error";
         }
 
         private bool IsValidInputForCurrentBase(string input)
         {
+            string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol", "+", "-", "*", "/", "=" };
+
+            if (operators.Contains(input))
+            {
+                return true;
+            }
+
             switch (currentBase)
             {
                 case 16: // HEX
@@ -218,6 +332,7 @@ namespace WPFCalculator.Views
                     return false;
             }
         }
+
 
         private void UpdateDisplay()
         {
@@ -236,13 +351,7 @@ namespace WPFCalculator.Views
                 txtOct.Text = $"OCT: {oct}";
                 txtBin.Text = $"BIN: {bin}";
 
-                // Highlight pentru baza selectată
-                txtHex.Style = currentBase == 16 ? (Style)FindResource("SelectedBaseStyle") : null;
-                txtDec.Style = currentBase == 10 ? (Style)FindResource("SelectedBaseStyle") : null;
-                txtOct.Style = currentBase == 8 ? (Style)FindResource("SelectedBaseStyle") : null;
-                txtBin.Style = currentBase == 2 ? (Style)FindResource("SelectedBaseStyle") : null;
 
-                // Dezactivează butoanele inaccesibile
                 foreach (Button button in ProgrammerButtonGrid.Children.OfType<Button>())
                 {
                     if (!IsValidInputForCurrentBase(button.Content.ToString()))
@@ -251,7 +360,7 @@ namespace WPFCalculator.Views
                     }
                     else
                     {
-                        button.Style = null; // Resetează stilul pentru butoanele accesibile
+                        button.Style = null;
                     }
                 }
             }
@@ -275,23 +384,37 @@ namespace WPFCalculator.Views
                 {
                     StandardButtonGrid.Visibility = Visibility.Collapsed;
                     ProgrammerButtonGrid.Visibility = Visibility.Visible;
+                    ProgrammerDisplay.Visibility = Visibility.Visible;  
                     GenerateProgrammerButtons();
                 }
                 else
                 {
                     StandardButtonGrid.Visibility = Visibility.Visible;
                     ProgrammerButtonGrid.Visibility = Visibility.Collapsed;
+                    ProgrammerDisplay.Visibility = Visibility.Collapsed;
                 }
+                ModeLabel.Text = isProgrammerMode ? "Programmer" : "Standard";
 
                 UpdateDisplay();
             }
         }
+
+
+        private TextBlock selectedBase = null;
 
         private void BaseDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TextBlock textBlock = sender as TextBlock;
             if (textBlock != null)
             {
+                if (selectedBase != null)
+                {
+                    selectedBase.Style = (Style)FindResource("BaseTextStyle");
+                }
+
+                selectedBase = textBlock;
+                selectedBase.Style = (Style)FindResource("SelectedBaseStyle");
+
                 string baseText = textBlock.Text.Split(':')[0];
                 switch (baseText)
                 {
@@ -313,6 +436,7 @@ namespace WPFCalculator.Views
             }
         }
 
+
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             calculator.Clear();
@@ -330,5 +454,8 @@ namespace WPFCalculator.Views
             calculator.Backspace();
             UpdateDisplay();
         }
+        
+        
+
     }
 }
