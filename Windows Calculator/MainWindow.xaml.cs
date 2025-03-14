@@ -608,5 +608,41 @@ namespace WPFCalculator.Views
             aboutWindow.ShowDialog();
         }
 
+        private void CutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtDisplay.Text))
+            {
+                Clipboard.SetText(txtDisplay.Text);
+                txtDisplay.Clear();
+            }
+        }
+
+        private void CopyMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtDisplay.Text))
+            {
+                Clipboard.SetText(txtDisplay.Text);
+            }
+        }
+
+        private void PasteMenuItem_Click(object sender, RoutedEventArgs e)
+{
+    if (Clipboard.ContainsText())
+    {
+        string clipboardText = Clipboard.GetText();
+        if (double.TryParse(clipboardText, out _))
+        {
+            txtDisplay.Text = clipboardText;
+            calculator.SetDisplay(clipboardText);
+        }
+    }
+}
+
+        private void DigitGroupingMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            // de facut
+        }
+
+
     }
 }

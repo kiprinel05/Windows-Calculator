@@ -40,8 +40,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0,0">
+        <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <MenuItem Header="File">
+                <MenuItem Header="Cut" Click="CutMenuItem_Click"/>
+                <MenuItem Header="Copy" Click="CopyMenuItem_Click"/>
+                <MenuItem Header="Paste" Click="PasteMenuItem_Click"/>
+                <MenuItem Header="Digit Grouping" Click="DigitGroupingMenuItem_Click"/>
+            </MenuItem>
+        </Menu>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="19,10,0,0">
             <TextBlock FontSize="27" Foreground="White" Text="≡" Padding="0"
                        MouseDown="ModeSwitchButton_Click"/>
             <TextBlock x:Name="ModeLabel" FontSize="30" Foreground="White" Text="Standard"
