@@ -17,6 +17,12 @@ namespace WPFCalculator.Models
 
         public void AddDigit(string digit)
         {
+            string[] invalidCharacters = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
+            if (invalidCharacters.Contains(digit))
+            {
+                return;
+            }
+
             if (_isNewInput)
             {
                 CurrentDisplay = digit;

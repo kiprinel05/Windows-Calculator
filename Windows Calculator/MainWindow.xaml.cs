@@ -5,18 +5,19 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using WPFCalculator.Models;
+using System.IO;
+
 
 namespace WPFCalculator.Views
 {
     public partial class MainWindow : Window
     {
-        private CalculatorLogic calculator = new CalculatorLogic();
-        private ProgrammerCalculator programmerCalculator = new ProgrammerCalculator();
-        private bool isProgrammerMode = false;
-        private int currentBase = 10;
 
+        /* STANDARD */
+
+        private CalculatorLogic calculator = new CalculatorLogic();
         private string[,] standardButtonsMatrix =
-        {
+{
             { "MC", "MR", "M+", "M-" },
             { "MS", "M>", "√", "x²" },
             { "7", "8", "9", "/" },
@@ -24,6 +25,14 @@ namespace WPFCalculator.Views
             { "1", "2", "3", "-" },
             { "+/-", "0", "=", "+" }
         };
+
+
+        /* PROGRAMER */
+
+        private int currentBase = 10;
+        private bool isProgrammerMode = false;
+        private ProgrammerCalculator programmerCalculator = new ProgrammerCalculator();
+
 
         private string[,] programmerButtonsMatrix =
         {
@@ -41,7 +50,11 @@ namespace WPFCalculator.Views
             InitializeComponent();
             GenerateStandardButtons();
             UpdateDisplay();
-            this.KeyDown += MainWindow_KeyDown; 
+            this.KeyDown += MainWindow_KeyDown;
+
+
+            int lastBase = LoadBaseFromFile();
+            SetBase(lastBase);
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -313,30 +326,26 @@ namespace WPFCalculator.Views
 
         private void HandleProgrammerInput(string content)
         {
+            MessageBox.Show("Input primit: " + content); // Debugging
+
+            string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
+
             if (IsValidInputForCurrentBase(content))
             {
                 calculator.AddDigit(content);
             }
-            else if (content == "C")
-            {
-                calculator.Clear();
-            }
-            else if (content == "CE")
-            {
-                calculator.ClearEntry();
-            }
-            else if (content == "⌫")
-            {
-                calculator.Backspace();
-            }
-            else if (content == "=")
-            {
-                calculator.Calculate();
-            }
-            else
+            else if (operators.Contains(content))
             {
                 string num1 = calculator.StoredValue;
                 string num2 = calculator.CurrentDisplay;
+
+                if (num1 == "0")
+                {
+                    num1 = num2;
+                    calculator.StoredValue = num1;
+                    calculator.ClearEntry();
+                    return;
+                }
 
                 switch (content)
                 {
@@ -367,10 +376,30 @@ namespace WPFCalculator.Views
                     default:
                         break;
                 }
+                calculator.StoredValue = "0";
+                calculator.LastActionWasOperator = true;
+            }
+            else if (content == "C")
+            {
+                calculator.Clear();
+            }
+            else if (content == "CE")
+            {
+                calculator.ClearEntry();
+            }
+            else if (content == "⌫")
+            {
+                calculator.Backspace();
+            }
+            else if (content == "=")
+            {
+                calculator.Calculate();
             }
 
             UpdateDisplay();
         }
+
+
         private string BitwiseRotateLeft(string number, int shift)
         {
             if (long.TryParse(number, out long value))
@@ -385,11 +414,11 @@ namespace WPFCalculator.Views
 
         private bool IsValidInputForCurrentBase(string input)
         {
-            string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol", "+", "-", "*", "/", "=" };
+            string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
 
             if (operators.Contains(input))
             {
-                return true;
+                return false; 
             }
 
             switch (currentBase)
@@ -478,8 +507,7 @@ namespace WPFCalculator.Views
 
         private void BaseDisplay_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            TextBlock textBlock = sender as TextBlock;
-            if (textBlock != null)
+            if (sender is TextBlock textBlock)
             {
                 if (selectedBase != null)
                 {
@@ -506,10 +534,11 @@ namespace WPFCalculator.Views
                         break;
                 }
 
+                SaveBaseToFile(currentBase);
+
                 UpdateDisplay();
             }
         }
-
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
@@ -528,8 +557,54 @@ namespace WPFCalculator.Views
             calculator.Backspace();
             UpdateDisplay();
         }
-        
-        
+        private void SaveBaseToFile(int baseValue)
+        {
+            File.WriteAllText("config.txt", baseValue.ToString());
+        }
+
+        private int LoadBaseFromFile()
+        {
+            if (File.Exists("config.txt"))
+            {
+                string baseText = File.ReadAllText("config.txt");
+                if (int.TryParse(baseText, out int savedBase))
+                {
+                    return savedBase;
+                }
+            }
+            return 10;
+        }
+
+        private void SetBase(int baseValue)
+        {
+            string baseText = baseValue switch
+            {
+                16 => "HEX",
+                10 => "DEC",
+                8 => "OCT",
+                2 => "BIN",
+                _ => "DEC"
+            };
+
+            foreach (var child in ProgrammerDisplay.Children)
+            {
+                if (child is TextBlock textBlock && textBlock.Text.StartsWith(baseText))
+                {
+                    if (selectedBase != null)
+                    {
+                        selectedBase.Style = (Style)FindResource("BaseTextStyle");
+                    }
+
+                    selectedBase = textBlock;
+                    selectedBase.Style = (Style)FindResource("SelectedBaseStyle");
+                    currentBase = baseValue;
+
+                    UpdateDisplay();
+                    break;
+                }
+            }
+        }
+
 
     }
 }

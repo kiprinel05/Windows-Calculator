@@ -25,8 +25,11 @@
         <Style x:Key="SelectedBaseStyle" TargetType="TextBlock">
             <Setter Property="Background" Value="#0078D7"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="5"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+
         </Style>
     </Window.Resources>
 
