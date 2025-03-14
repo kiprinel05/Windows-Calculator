@@ -602,7 +602,11 @@ namespace WPFCalculator.Views
                 }
             }
         }
-
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            About aboutWindow = new About();
+            aboutWindow.ShowDialog();
+        }
 
     }
 }

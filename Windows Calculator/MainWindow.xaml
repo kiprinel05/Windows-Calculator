@@ -41,11 +41,20 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0, 0">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0,0">
             <TextBlock FontSize="27" Foreground="White" Text="≡" Padding="0"
-               MouseDown="ModeSwitchButton_Click"/>
-            <TextBlock x:Name="ModeLabel" FontSize="30" Foreground="White" Text="Standard" 
-               VerticalAlignment="Center" Margin="20,0,0,0"/>
+                       MouseDown="ModeSwitchButton_Click"/>
+            <TextBlock x:Name="ModeLabel" FontSize="30" Foreground="White" Text="Standard"
+                       VerticalAlignment="Center" Margin="20,0,20,0"/>
+            <Button Width="40" Height="40" Background="Transparent" Foreground="White" Margin="140,0,10,0" Click="HelpButton_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                            <TextBlock Text="☢️" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </StackPanel>
         <Border CornerRadius="15" Background="#1e2024" BorderBrush="DarkGray" BorderThickness="1" Margin="10" Grid.Row="1">
             <StackPanel>

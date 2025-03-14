@@ -1,0 +1,73 @@
+﻿<Window x:Class="WPFCalculator.Views.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About" Height="350" Width="500" ResizeMode="NoResize" Background="#1e2023">
+
+    <!-- Stilizare fereastră -->
+    <Window.Resources>
+        <Style x:Key="TextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Margin" Value="0,5"/>
+        </Style>
+
+        <Style x:Key="HyperlinkStyle" TargetType="Hyperlink">
+            <Setter Property="Foreground" Value="#0078D7"/>
+            <Setter Property="TextDecorations" Value="None"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0078D7"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="ButtonHoverStyle" TargetType="Button">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Button.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Duration="0:0:0.3" To="#0056A4" Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)" AutoReverse="True"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <!-- Layout -->
+    <Border CornerRadius="15" BorderBrush="DarkGray" BorderThickness="2" Padding="20" Background="#2b2e33">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
+            <!-- Titlu -->
+
+            <!-- Nume -->
+            <!-- Titlu -->
+            <TextBlock Text="★ APP MADE BY ★" Foreground="#0078D7" FontSize="26" FontWeight="Bold"/>
+
+            <TextBlock Style="{StaticResource TextBlockStyle}" HorizontalAlignment="Center" Text="Name" FontWeight="Bold" FontSize="20px"/>
+
+            <TextBlock Style="{StaticResource TextBlockStyle}" HorizontalAlignment="Center" Text="Dumitrasc Ciprian"/>
+            <TextBlock Style="{StaticResource TextBlockStyle}" HorizontalAlignment="Center" Text="Group" FontWeight="Bold" FontSize="20px"/>
+            <TextBlock Style="{StaticResource TextBlockStyle}" HorizontalAlignment="Center" Text="10LF331"/>
+
+
+
+            <Button Content="Visit GitHub" Style="{StaticResource ButtonStyle}" Click="OnGitHubButtonClick">
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10, 10, 10, 10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <!-- Buton GitHub cu Border pentru CornerRadius -->
+        </StackPanel>
+    </Border>
+</Window>
