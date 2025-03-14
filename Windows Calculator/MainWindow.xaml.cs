@@ -52,7 +52,6 @@ namespace WPFCalculator.Views
             UpdateDisplay();
             this.KeyDown += MainWindow_KeyDown;
 
-
             int lastBase = LoadBaseFromFile();
             SetBase(lastBase);
         }
@@ -195,9 +194,11 @@ namespace WPFCalculator.Views
 
         private void GenerateProgrammerButtons()
         {
+            // Obține dimensiunile matricei de butoane
             int rows = programmerButtonsMatrix.GetLength(0);
             int cols = programmerButtonsMatrix.GetLength(1);
 
+            // Parcurge matricea și creează butoane pentru fiecare element
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
@@ -209,7 +210,9 @@ namespace WPFCalculator.Views
                         Content = buttonText,
                         FontSize = 20,
                         Margin = new Thickness(5),
-                        Foreground = Brushes.White
+                        Foreground = Brushes.White,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Stretch
                     };
 
                     SolidColorBrush backgroundColor = new SolidColorBrush(Color.FromRgb(57, 59, 63));
@@ -243,14 +246,17 @@ namespace WPFCalculator.Views
                     buttonTemplate.Triggers.Add(hoverTrigger);
 
                     button.Template = buttonTemplate;
+
                     button.Click += Button_Click;
 
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
+
                     ProgrammerButtonGrid.Children.Add(button);
                 }
             }
         }
+
 
 
 
@@ -345,7 +351,6 @@ namespace WPFCalculator.Views
 
         private void HandleProgrammerInput(string content)
         {
-            MessageBox.Show("Input primit: " + content); // Debugging
 
             string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
 
@@ -496,30 +501,37 @@ namespace WPFCalculator.Views
 
         private void ModeSwitchButton_Click(object sender, RoutedEventArgs e)
         {
-            ModeSelectionDialog dialog = new ModeSelectionDialog();
+            // Creează și afișează fereastra de selecție a modului
+            ModeSelectionDialog dialog = new ModeSelectionDialog(isProgrammerMode); // Trimite starea curentă
             if (dialog.ShowDialog() == true)
             {
+                // Actualizează starea modului și setează modul în logică
                 isProgrammerMode = dialog.IsProgrammerModeSelected;
                 calculator.SetMode(isProgrammerMode ? CalculatorLogic.CalculatorMode.Programmer : CalculatorLogic.CalculatorMode.Standard);
 
+                // Schimbă vizibilitatea butoanelor și a display-ului în funcție de modul selectat
                 if (isProgrammerMode)
                 {
-                    StandardButtonGrid.Visibility = Visibility.Collapsed;
-                    ProgrammerButtonGrid.Visibility = Visibility.Visible;
-                    ProgrammerDisplay.Visibility = Visibility.Visible;  
-                    GenerateProgrammerButtons();
+                    StandardButtonGrid.Visibility = Visibility.Collapsed;  // Ascunde butoanele din Standard Mode
+                    ProgrammerButtonGrid.Visibility = Visibility.Visible;   // Afișează butoanele din Programmer Mode
+                    ProgrammerDisplay.Visibility = Visibility.Visible;      // Afișează display-ul din Programmer Mode
+                    GenerateProgrammerButtons();                            // Generează butoanele specifice pentru Programmer Mode
                 }
                 else
                 {
-                    StandardButtonGrid.Visibility = Visibility.Visible;
-                    ProgrammerButtonGrid.Visibility = Visibility.Collapsed;
-                    ProgrammerDisplay.Visibility = Visibility.Collapsed;
+                    StandardButtonGrid.Visibility = Visibility.Visible;    // Afișează butoanele din Standard Mode
+                    ProgrammerButtonGrid.Visibility = Visibility.Collapsed; // Ascunde butoanele din Programmer Mode
+                    ProgrammerDisplay.Visibility = Visibility.Collapsed;   // Ascunde display-ul din Programmer Mode
                 }
+
+                // Actualizează eticheta pentru a reflecta modul curent
                 ModeLabel.Text = isProgrammerMode ? "Programmer" : "Standard";
 
+                // Actualizează display-ul pentru a reflecta schimbările
                 UpdateDisplay();
             }
         }
+
 
 
         private TextBlock selectedBase = null;
