@@ -138,6 +138,7 @@ namespace WPFCalculator.Views
                 for (int j = 0; j < cols; j++)
                 {
                     string buttonText = standardButtonsMatrix[i, j];
+
                     Button button = new Button
                     {
                         Content = buttonText,
@@ -150,9 +151,12 @@ namespace WPFCalculator.Views
                         ? new SolidColorBrush(Color.FromRgb(45, 51, 61))
                         : new SolidColorBrush(Color.FromRgb(56, 59, 66));
 
+                    SolidColorBrush hoverBackground = new SolidColorBrush(Color.FromRgb(80, 80, 90));
+
                     var borderFactory = new FrameworkElementFactory(typeof(Border));
-                    borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(10)); 
+                    borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(10));
                     borderFactory.SetValue(Border.BackgroundProperty, backgroundColor);
+                    borderFactory.Name = "borderElement"; 
 
                     var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
                     contentPresenterFactory.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
@@ -164,6 +168,15 @@ namespace WPFCalculator.Views
                     {
                         VisualTree = borderFactory
                     };
+
+                    Trigger hoverTrigger = new Trigger
+                    {
+                        Property = UIElement.IsMouseOverProperty,
+                        Value = true
+                    };
+                    hoverTrigger.Setters.Add(new Setter(Border.BackgroundProperty, hoverBackground, "borderElement"));
+
+                    buttonTemplate.Triggers.Add(hoverTrigger);
 
                     button.Template = buttonTemplate;
                     button.Click += Button_Click;
@@ -189,20 +202,24 @@ namespace WPFCalculator.Views
             {
                 for (int j = 0; j < cols; j++)
                 {
+                    string buttonText = programmerButtonsMatrix[i, j];
+
                     Button button = new Button
                     {
-                        Content = programmerButtonsMatrix[i, j],
+                        Content = buttonText,
                         FontSize = 20,
                         Margin = new Thickness(5),
-                        Background = new SolidColorBrush(Color.FromRgb(57, 59, 63)),
                         Foreground = Brushes.White
                     };
 
-                    button.Click += Button_Click;
+                    SolidColorBrush backgroundColor = new SolidColorBrush(Color.FromRgb(57, 59, 63));
+
+                    SolidColorBrush hoverBackground = new SolidColorBrush(Color.FromRgb(80, 80, 90));
 
                     var borderFactory = new FrameworkElementFactory(typeof(Border));
-                    borderFactory.SetValue(Border.BackgroundProperty, new TemplateBindingExtension(Button.BackgroundProperty));
-                    borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(10)); 
+                    borderFactory.SetValue(Border.BackgroundProperty, backgroundColor);
+                    borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(10));
+                    borderFactory.Name = "borderElement";
 
                     var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
                     contentPresenterFactory.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
@@ -210,22 +227,23 @@ namespace WPFCalculator.Views
 
                     borderFactory.AppendChild(contentPresenterFactory);
 
-                    var controlTemplate = new ControlTemplate(typeof(Button))
+                    ControlTemplate buttonTemplate = new ControlTemplate(typeof(Button))
                     {
                         VisualTree = borderFactory
                     };
 
-                    var hoverTrigger = new Trigger
+                    Trigger hoverTrigger = new Trigger
                     {
-                        Property = Button.IsMouseOverProperty,
+                        Property = UIElement.IsMouseOverProperty,
                         Value = true
                     };
-
-                    hoverTrigger.Setters.Add(new Setter(Button.BackgroundProperty, new SolidColorBrush(Color.FromRgb(80, 80, 90))));
+                    hoverTrigger.Setters.Add(new Setter(Border.BackgroundProperty, hoverBackground, "borderElement"));
                     hoverTrigger.Setters.Add(new Setter(Button.ForegroundProperty, Brushes.WhiteSmoke));
 
-                    controlTemplate.Triggers.Add(hoverTrigger);
-                    button.Template = controlTemplate;
+                    buttonTemplate.Triggers.Add(hoverTrigger);
+
+                    button.Template = buttonTemplate;
+                    button.Click += Button_Click;
 
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
@@ -233,6 +251,7 @@ namespace WPFCalculator.Views
                 }
             }
         }
+
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
