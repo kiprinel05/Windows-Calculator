@@ -4,18 +4,18 @@ namespace WPFCalculator.Views
 {
     public partial class ModeSelectionDialog : Window
     {
-        private bool _isProgrammerMode;
+        private bool isProgrammerMode;
 
         public ModeSelectionDialog(bool isProgrammerMode)
         {
             InitializeComponent();
-            _isProgrammerMode = isProgrammerMode;
+            this.isProgrammerMode = isProgrammerMode;
             InitializeModeSelection();
         }
 
         private void InitializeModeSelection()
         {
-            if (_isProgrammerMode)
+            if (isProgrammerMode)
             {
                 ProgrammerModeRadio.IsChecked = true;
             }
@@ -27,11 +27,11 @@ namespace WPFCalculator.Views
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            _isProgrammerMode = ProgrammerModeRadio.IsChecked == true;
+            isProgrammerMode = ProgrammerModeRadio.IsChecked == true;
             DialogResult = true;
             Close();
         }
 
-        public bool IsProgrammerModeSelected => _isProgrammerMode;
+        public bool IsProgrammerModeSelected => isProgrammerMode;
     }
 }

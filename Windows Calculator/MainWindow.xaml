@@ -55,12 +55,17 @@
                     <TextBlock x:Name="txtOct" Style="{StaticResource BaseTextStyle}" Text="OCT: 0" MouseDown="BaseDisplay_MouseDown"/>
                     <TextBlock x:Name="txtBin" Style="{StaticResource BaseTextStyle}" Text="BIN: 0" MouseDown="BaseDisplay_MouseDown"/>
                 </StackPanel>
+                <StackPanel>
+                    <TextBlock x:Name="txtOperation" FontSize="20" Foreground="LightGray"
+               Opacity="0.7" TextAlignment="Right" HorizontalAlignment="Stretch"
+               VerticalAlignment="Bottom" Margin="0,0,10,5"/>
 
-                <TextBox x:Name="txtDisplay" FontSize="40" TextAlignment="Right"
+                    <TextBox x:Name="txtDisplay" FontSize="40" TextAlignment="Right"
              HorizontalAlignment="Stretch" VerticalAlignment="Center"
              IsReadOnly="True" Text="0" 
              Background="Transparent" Foreground="white" BorderThickness="0"
-             Padding="50,0,0,0"/>
+             Padding="0,0,10,0"/>
+                </StackPanel>
             </StackPanel>
         </Border>
 

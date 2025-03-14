@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using WPFCalculator.Models;
 using System.IO;
+using System.Globalization;
 
 
 namespace WPFCalculator.Views
@@ -44,11 +45,11 @@ namespace WPFCalculator.Views
             { "0", "(", ")", "=", "+" }
         };
 
-
+        private string currentExpression = "";
         public MainWindow()
         {
             InitializeComponent();
-            GenerateStandardButtons();
+            setButtons_Standard();
             UpdateDisplay();
             this.KeyDown += MainWindow_KeyDown;
 
@@ -56,78 +57,42 @@ namespace WPFCalculator.Views
             SetBase(lastBase);
         }
 
+        private readonly Dictionary<Key, string> keyMappings = new()
+        {
+            { Key.D0, "0" }, { Key.NumPad0, "0" },
+            { Key.D1, "1" }, { Key.NumPad1, "1" },
+            { Key.D2, "2" }, { Key.NumPad2, "2" },
+            { Key.D3, "3" }, { Key.NumPad3, "3" },
+            { Key.D4, "4" }, { Key.NumPad4, "4" },
+            { Key.D5, "5" }, { Key.NumPad5, "5" },
+            { Key.D6, "6" }, { Key.NumPad6, "6" },
+            { Key.D7, "7" }, { Key.NumPad7, "7" },
+            { Key.D8, "8" }, { Key.NumPad8, "8" },
+            { Key.D9, "9" }, { Key.NumPad9, "9" },
+            { Key.OemMinus, "-" }, { Key.Subtract, "-" },
+            { Key.OemQuestion, "/" }, { Key.Divide, "/" },
+            { Key.Oem5, "\\" }, { Key.Multiply, "*" },
+            { Key.Decimal, CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator },
+            { Key.OemPeriod, CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator },
+            { Key.Back, "⌫" },
+            { Key.Enter, "=" },
+            { Key.Escape, "C" }
+        };
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            string key = e.Key.ToString();
-
-            if (key.StartsWith("D") && key.Length == 2)
+            if (keyMappings.TryGetValue(e.Key, out string key))
             {
-                key = key.Substring(1);
-            }
-            else if (key == "OemPlus")
-            {
-                key = "+";
-            }
-            else if (key == "OemMinus")
-            {
-                key = "-";
-            }
-            else if (key == "OemQuestion")
-            {
-                key = "/";
-            }
-            else if (key == "Oem5")
-            {
-                key = "\\";
-            }
-            else if (key == "OemPeriod")
-            {
-                key = ".";
-            }
-            else if (key == "OemComma")
-            {
-                key = ",";
-            }
-            else if (key == "Multiply")
-            {
-                key = "*";
-            }
-            else if (key == "Add")
-            {
-                key = "+";
-            }
-            else if (key == "Subtract")
-            {
-                key = "-";
-            }
-            else if (key == "Divide")
-            {
-                key = "/";
-            }
-            else if (key == "Decimal")
-            {
-                key = ".";
-            }
-            else if (key == "Back")
-            {
-                key = "⌫";
-            }
-            else if (key == "Enter")
-            {
-                key = "=";
-            }
-            else if (key == "Escape")
-            {
-                key = "C";
-            }
-            else
-            {
+                Button_Click(new Button { Content = key }, new RoutedEventArgs());
                 return;
             }
 
-            Button_Click(new Button { Content = key }, new RoutedEventArgs());
+            if (e.Key == Key.OemPlus)
+            {
+                key = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? "+" : "=";
+                Button_Click(new Button { Content = key }, new RoutedEventArgs());
+            }
         }
-        private void GenerateStandardButtons()
+        private void setButtons_Standard()
         {
             int rows = standardButtonsMatrix.GetLength(0);
             int cols = standardButtonsMatrix.GetLength(1);
@@ -192,13 +157,11 @@ namespace WPFCalculator.Views
             return text == "+" || text == "-" || text == "*" || text == "/" || text == "=" || text == "MC" || text == "MR" || text == "M+" || text == "M-" || text == "x²" || text == "MS" || text == "M>" || text == "+/-" || text == "√";
         }
 
-        private void GenerateProgrammerButtons()
+        private void setButtons_Programmer()
         {
-            // Obține dimensiunile matricei de butoane
             int rows = programmerButtonsMatrix.GetLength(0);
             int cols = programmerButtonsMatrix.GetLength(1);
 
-            // Parcurge matricea și creează butoane pentru fiecare element
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
@@ -257,9 +220,6 @@ namespace WPFCalculator.Views
             }
         }
 
-
-
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
@@ -279,16 +239,17 @@ namespace WPFCalculator.Views
                 UpdateDisplay();
             }
         }
-
         private void HandleStandardInput(string content)
         {
             if (int.TryParse(content, out _))
             {
                 calculator.AddDigit(content);
+                currentExpression += content;
             }
             else if (content == "C")
             {
                 calculator.Clear();
+                currentExpression = "";
             }
             else if (content == "CE")
             {
@@ -297,22 +258,30 @@ namespace WPFCalculator.Views
             else if (content == "⌫")
             {
                 calculator.Backspace();
+                if (currentExpression.Length > 0)
+                {
+                    currentExpression = currentExpression.Substring(0, currentExpression.Length - 1);
+                }
             }
             else if (content == "=")
             {
                 calculator.Calculate();
+                currentExpression += " = " + calculator.CurrentDisplay;
             }
             else if (content == "√")
             {
                 calculator.SquareRoot();
+                currentExpression += " √";
             }
             else if (content == "x²")
             {
                 calculator.Square();
+                currentExpression += " x²";
             }
             else if (content == "+/-")
             {
                 calculator.Negate();
+                currentExpression += " +/-";
             }
             else if (content == "MC")
             {
@@ -345,16 +314,19 @@ namespace WPFCalculator.Views
                     return;
                 }
                 calculator.SetOperator(content);
+                currentExpression += " " + content + " ";
                 calculator.LastActionWasOperator = true;
             }
+            txtOperation.Text = currentExpression;
         }
+
 
         private void HandleProgrammerInput(string content)
         {
 
             string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
 
-            if (IsValidInputForCurrentBase(content))
+            if (isValidforBase(content))
             {
                 calculator.AddDigit(content);
             }
@@ -436,7 +408,7 @@ namespace WPFCalculator.Views
             return "Error";
         }
 
-        private bool IsValidInputForCurrentBase(string input)
+        private bool isValidforBase(string input)
         {
             string[] operators = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
 
@@ -481,7 +453,7 @@ namespace WPFCalculator.Views
 
                 foreach (Button button in ProgrammerButtonGrid.Children.OfType<Button>())
                 {
-                    if (!IsValidInputForCurrentBase(button.Content.ToString()))
+                    if (!isValidforBase(button.Content.ToString()))
                     {
                         button.Style = (Style)FindResource("DisabledButtonStyle");
                     }
@@ -501,33 +473,28 @@ namespace WPFCalculator.Views
 
         private void ModeSwitchButton_Click(object sender, RoutedEventArgs e)
         {
-            // Creează și afișează fereastra de selecție a modului
-            ModeSelectionDialog dialog = new ModeSelectionDialog(isProgrammerMode); // Trimite starea curentă
+            ModeSelectionDialog dialog = new ModeSelectionDialog(isProgrammerMode);
             if (dialog.ShowDialog() == true)
             {
-                // Actualizează starea modului și setează modul în logică
                 isProgrammerMode = dialog.IsProgrammerModeSelected;
                 calculator.SetMode(isProgrammerMode ? CalculatorLogic.CalculatorMode.Programmer : CalculatorLogic.CalculatorMode.Standard);
 
-                // Schimbă vizibilitatea butoanelor și a display-ului în funcție de modul selectat
                 if (isProgrammerMode)
                 {
-                    StandardButtonGrid.Visibility = Visibility.Collapsed;  // Ascunde butoanele din Standard Mode
-                    ProgrammerButtonGrid.Visibility = Visibility.Visible;   // Afișează butoanele din Programmer Mode
-                    ProgrammerDisplay.Visibility = Visibility.Visible;      // Afișează display-ul din Programmer Mode
-                    GenerateProgrammerButtons();                            // Generează butoanele specifice pentru Programmer Mode
+                    StandardButtonGrid.Visibility = Visibility.Collapsed; 
+                    ProgrammerButtonGrid.Visibility = Visibility.Visible;   
+                    ProgrammerDisplay.Visibility = Visibility.Visible; 
+                    setButtons_Programmer();                     
                 }
                 else
                 {
-                    StandardButtonGrid.Visibility = Visibility.Visible;    // Afișează butoanele din Standard Mode
-                    ProgrammerButtonGrid.Visibility = Visibility.Collapsed; // Ascunde butoanele din Programmer Mode
-                    ProgrammerDisplay.Visibility = Visibility.Collapsed;   // Ascunde display-ul din Programmer Mode
+                    StandardButtonGrid.Visibility = Visibility.Visible;  
+                    ProgrammerButtonGrid.Visibility = Visibility.Collapsed;
+                    ProgrammerDisplay.Visibility = Visibility.Collapsed;
                 }
 
-                // Actualizează eticheta pentru a reflecta modul curent
                 ModeLabel.Text = isProgrammerMode ? "Programmer" : "Standard";
 
-                // Actualizează display-ul pentru a reflecta schimbările
                 UpdateDisplay();
             }
         }

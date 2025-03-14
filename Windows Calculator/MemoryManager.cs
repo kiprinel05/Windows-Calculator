@@ -1,45 +1,63 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace WPFCalculator.Models
 {
     public class MemoryManager
     {
         private double memory = 0;
-        private List<double> memoryStack = new List<double>();
+        private bool hasMemory = false;
 
         public string MemoryDisplay { get; private set; } = "";
 
         public void MemoryClear()
         {
             memory = 0;
-            memoryStack.Clear();
+            hasMemory = false;
             MemoryDisplay = "";
         }
 
         public void MemoryRecall(ref string currentDisplay)
         {
-            currentDisplay = memory.ToString();
+            if (hasMemory)
+            {
+                currentDisplay = memory.ToString();
+            }
         }
 
         public void MemoryAdd(double value)
         {
-            memory += value;
+            if (hasMemory)
+            {
+                memory += value;
+                UpdateMemoryDisplay();
+            }
         }
 
         public void MemorySubtract(double value)
         {
-            memory -= value;
+            if (hasMemory)
+            {
+                memory -= value;
+                UpdateMemoryDisplay();
+            }
         }
 
         public void MemoryStore(double value)
         {
             memory = value;
-            memoryStack.Add(value);
+            hasMemory = true;
+            UpdateMemoryDisplay();
         }
 
         public string MemoryView()
         {
-            return string.Join(", ", memoryStack);
+            return hasMemory ? memory.ToString() : "";
+        }
+
+        private void UpdateMemoryDisplay()
+        {
+            MemoryDisplay = MemoryView();
         }
     }
 }

@@ -4,10 +4,10 @@ namespace WPFCalculator.Models
 {
     public class CalculatorLogic
     {
-        private double _currentValue = 0;
-        private double _memoryValue = 0;
-        private string _currentOperator = "";
-        private bool _isNewInput = true;
+        private double currentValue = 0;
+        private double memoryValue = 0;
+        private string currentOperator = "";
+        private bool isNewInput = true;
 
         public bool LastActionWasOperator { get; set; } = false;
         public string StoredValue { get; set; } = "0";
@@ -17,16 +17,13 @@ namespace WPFCalculator.Models
 
         public void AddDigit(string digit)
         {
-            string[] invalidCharacters = { "AND", "OR", "XOR", "NOT", "<<", ">>", "Mod", "Rol" };
-            if (invalidCharacters.Contains(digit))
-            {
+            if (!double.TryParse(digit, out _) && !IsValidOperator(digit))
                 return;
-            }
 
-            if (_isNewInput)
+            if (isNewInput)
             {
                 CurrentDisplay = digit;
-                _isNewInput = false;
+                isNewInput = false;
             }
             else
             {
@@ -34,45 +31,66 @@ namespace WPFCalculator.Models
             }
             LastActionWasOperator = false;
         }
-
+        private bool IsValidOperator(string input)
+        {
+            string[] validOperators = { "+", "-", "*", "/", "Mod", "AND", "OR", "XOR", "NOT", "<<", ">>", "Rol" };
+            return Array.Exists(validOperators, op => op == input);
+        }
         public void SetOperator(string op)
         {
-            CurrentOperator = op;
-            if (!string.IsNullOrEmpty(_currentOperator))
+            if (!IsValidOperator(op)) return;
+
+            if (!string.IsNullOrEmpty(currentOperator))
                 Calculate();
 
-            _currentValue = double.Parse(CurrentDisplay);
-            _currentOperator = op;
-            _isNewInput = true;
+            if (double.TryParse(CurrentDisplay, out double parsedValue))
+                currentValue = parsedValue;
+
+            currentOperator = op;
+            isNewInput = true;
         }
 
         public void Calculate()
         {
-            double newValue = double.Parse(CurrentDisplay);
-            switch (_currentOperator)
+            if (!double.TryParse(CurrentDisplay, out double newValue))
             {
-                case "+": _currentValue += newValue; break;
-                case "-": _currentValue -= newValue; break;
-                case "*": _currentValue *= newValue; break;
-                case "/":
-                    if (newValue != 0)
-                        _currentValue /= newValue;
-                    else
-                        CurrentDisplay = "Eroare";
-                    break;
+                CurrentDisplay = "Eroare";
+                return;
             }
-            CurrentDisplay = _currentValue.ToString();
-            _currentOperator = "";
-            _isNewInput = true;
-        }
 
+            try
+            {
+                switch (currentOperator)
+                {
+                    case "+": currentValue += newValue; break;
+                    case "-": currentValue -= newValue; break;
+                    case "*": currentValue *= newValue; break;
+                    case "/":
+                        if (newValue != 0)
+                            currentValue /= newValue;
+                        else
+                            throw new DivideByZeroException();
+                        break;
+                }
+
+                CurrentDisplay = currentValue.ToString();
+            }
+            catch (Exception ex)
+            {
+                CurrentDisplay = ex.Message;
+            }
+
+            currentOperator = "";
+            isNewInput = true;
+        }
         public void Clear()
         {
-            _currentValue = 0;
-            _currentOperator = "";
+            currentValue = 0;
+            currentOperator = "";
             CurrentDisplay = "0";
-            _isNewInput = true;
+            isNewInput = true;
         }
+
         public void CalculatePercentage()
         {
             if (double.TryParse(CurrentDisplay, out double value))
@@ -168,8 +186,11 @@ namespace WPFCalculator.Models
         }
         public void ClearEntry()
         {
-            CurrentDisplay = "0";
-            _isNewInput = true;
+            if (!isNewInput)
+            {
+                CurrentDisplay = "0";
+                isNewInput = true;
+            }
         }
 
         public void Backspace()
@@ -183,6 +204,7 @@ namespace WPFCalculator.Models
                 CurrentDisplay = "0";
             }
         }
+
         public void SetDisplay(string value)
         {
             CurrentDisplay = value;

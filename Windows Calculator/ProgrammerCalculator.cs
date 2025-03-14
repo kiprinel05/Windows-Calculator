@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace WPFCalculator.Models
 {
@@ -6,83 +7,87 @@ namespace WPFCalculator.Models
     {
         public string ConvertToBinary(string number)
         {
-            if (long.TryParse(number, out long value))
+            if (BigInteger.TryParse(number, out BigInteger value))
             {
-                return Convert.ToString(value, 2);
+                if (value < 0) return "Negative numbers not supported";
+                return Convert.ToString((long)value, 2);
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string ConvertToHex(string number)
         {
-            if (long.TryParse(number, out long value))
+            if (BigInteger.TryParse(number, out BigInteger value))
             {
-                return Convert.ToString(value, 16).ToUpper();
+                return value.ToString("X");
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string ConvertToOctal(string number)
         {
-            if (long.TryParse(number, out long value))
+            if (BigInteger.TryParse(number, out BigInteger value))
             {
-                return Convert.ToString(value, 8);
+                if (value < 0) return "Negative numbers not supported";
+                return Convert.ToString((long)value, 8);
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string BitwiseAND(string num1, string num2)
         {
-            if (long.TryParse(num1, out long val1) && long.TryParse(num2, out long val2))
+            if (BigInteger.TryParse(num1, out BigInteger val1) && BigInteger.TryParse(num2, out BigInteger val2))
             {
                 return (val1 & val2).ToString();
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string BitwiseOR(string num1, string num2)
         {
-            if (long.TryParse(num1, out long val1) && long.TryParse(num2, out long val2))
+            if (BigInteger.TryParse(num1, out BigInteger val1) && BigInteger.TryParse(num2, out BigInteger val2))
             {
                 return (val1 | val2).ToString();
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string BitwiseXOR(string num1, string num2)
         {
-            if (long.TryParse(num1, out long val1) && long.TryParse(num2, out long val2))
+            if (BigInteger.TryParse(num1, out BigInteger val1) && BigInteger.TryParse(num2, out BigInteger val2))
             {
                 return (val1 ^ val2).ToString();
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string BitwiseNOT(string number)
         {
-            if (long.TryParse(number, out long value))
+            if (BigInteger.TryParse(number, out BigInteger value))
             {
                 return (~value).ToString();
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string BitShiftLeft(string number, int shift)
         {
-            if (long.TryParse(number, out long value))
+            if (BigInteger.TryParse(number, out BigInteger value))
             {
+                if (shift < 0) return "Error: Negative shift not allowed";
                 return (value << shift).ToString();
             }
-            return "Error";
+            return "Error: Invalid input";
         }
 
         public string BitShiftRight(string number, int shift)
         {
-            if (long.TryParse(number, out long value))
+            if (BigInteger.TryParse(number, out BigInteger value))
             {
+                if (shift < 0) return "Error: Negative shift not allowed";
                 return (value >> shift).ToString();
             }
-            return "Error";
+            return "Error: Invalid input";
         }
     }
 }
