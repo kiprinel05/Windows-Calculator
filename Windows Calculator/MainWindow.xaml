@@ -40,7 +40,19 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch">
+        <Button x:Name="ShowMenuButton" Content="☰" Width="25" Height="26" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="313,18,0,0" 
+                Click="ShowMenuButton_Click" Background="Transparent">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                        <TextBlock Text="📄" FontSize="20" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <!-- Meniul care va fi afișat când butonul este apăsat -->
+        <Menu x:Name="FileMenu" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Collapsed" Margin="20,0,0,0">
             <MenuItem Header="File">
                 <MenuItem Header="Cut" Click="CutMenuItem_Click"/>
                 <MenuItem Header="Copy" Click="CopyMenuItem_Click"/>

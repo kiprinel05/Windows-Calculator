@@ -643,6 +643,16 @@ namespace WPFCalculator.Views
             // de facut
         }
 
-
+        private void ShowMenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (FileMenu.Visibility == Visibility.Visible)
+            {
+                FileMenu.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                FileMenu.Visibility = Visibility.Visible;
+            }
+        }
     }
 }
