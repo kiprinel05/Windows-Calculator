@@ -13,6 +13,7 @@ namespace WPFCalculator.Views
 {
     public partial class MainWindow : Window
     {
+        private bool isDigitGroupingEnabled = false;
 
         /* STANDARD */
 
@@ -446,10 +447,9 @@ namespace WPFCalculator.Views
                 string bin = programmerCalculator.ConvertToBinary(calculator.CurrentDisplay);
 
                 txtHex.Text = $"HEX: {hex}";
-                txtDec.Text = $"DEC: {dec}";
+                txtDec.Text = $"DEC: {FormatNumber(dec)}";
                 txtOct.Text = $"OCT: {oct}";
                 txtBin.Text = $"BIN: {bin}";
-
 
                 foreach (Button button in ProgrammerButtonGrid.Children.OfType<Button>())
                 {
@@ -467,9 +467,10 @@ namespace WPFCalculator.Views
             {
                 ProgrammerDisplay.Visibility = Visibility.Collapsed;
                 txtDisplay.Visibility = Visibility.Visible;
-                txtDisplay.Text = calculator.CurrentDisplay;
+                txtDisplay.Text = FormatNumber(calculator.CurrentDisplay);
             }
         }
+
 
         private void ModeSwitchButton_Click(object sender, RoutedEventArgs e)
         {
@@ -640,8 +641,25 @@ namespace WPFCalculator.Views
 
         private void DigitGroupingMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // de facut
+            isDigitGroupingEnabled = !isDigitGroupingEnabled;
+            UpdateDisplay();
         }
+        private string FormatNumber(string number)
+        {
+            if (!isDigitGroupingEnabled || string.IsNullOrEmpty(number))
+                return number;
+
+            CultureInfo culture = CultureInfo.CurrentCulture;
+
+            if (number.Contains(".") || number.Contains(","))
+            {
+                string[] parts = number.Split('.', ',');
+                return string.Format(culture, "{0:N0}", long.Parse(parts[0])) + culture.NumberFormat.NumberDecimalSeparator + parts[1];
+            }
+
+            return string.Format(culture, "{0:N0}", long.Parse(number));
+        }
+
 
         private void ShowMenuButton_Click(object sender, RoutedEventArgs e)
         {
