@@ -15,7 +15,6 @@ namespace WPFCalculator.Views
         }
         private void OnGitHubButtonClick(object sender, RoutedEventArgs e)
         {
-            // Deschide GitHub în browser
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://github.com/kiprinel05") { UseShellExecute = true });
         }
     }

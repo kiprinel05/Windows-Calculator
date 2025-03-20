@@ -4,8 +4,8 @@
         Title="Calculator" Height="600" Width="400" ResizeMode="NoResize">
     <Window.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#1e2023" Offset="0"/>
-            <GradientStop Color="#1a212e" Offset="1"/>
+            <GradientStop Color="#121212" Offset="0"/>
+            <GradientStop Color="#1a1f2b" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
 
@@ -51,13 +51,14 @@
             </Button.Template>
         </Button>
 
-        <!-- Meniul care va fi afișat când butonul este apăsat -->
         <Menu x:Name="FileMenu" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Collapsed" Margin="20,0,0,0">
             <MenuItem Header="File">
                 <MenuItem Header="Cut" Click="CutMenuItem_Click"/>
                 <MenuItem Header="Copy" Click="CopyMenuItem_Click"/>
                 <MenuItem Header="Paste" Click="PasteMenuItem_Click"/>
                 <MenuItem Header="Digit Grouping" Click="DigitGroupingMenuItem_Click"/>
+                <MenuItem Header="Order of Operations" Click="OrderOfOperationsMenuItem_Click"/>
+
             </MenuItem>
         </Menu>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="19,10,0,0">

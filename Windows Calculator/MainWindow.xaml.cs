@@ -627,17 +627,17 @@ namespace WPFCalculator.Views
         }
 
         private void PasteMenuItem_Click(object sender, RoutedEventArgs e)
-{
-    if (Clipboard.ContainsText())
-    {
-        string clipboardText = Clipboard.GetText();
-        if (double.TryParse(clipboardText, out _))
         {
-            txtDisplay.Text = clipboardText;
-            calculator.SetDisplay(clipboardText);
+            if (Clipboard.ContainsText())
+            {
+                string clipboardText = Clipboard.GetText();
+                if (double.TryParse(clipboardText, out _))
+                {
+                    txtDisplay.Text = clipboardText;
+                    calculator.SetDisplay(clipboardText);
+                }
+            }
         }
-    }
-}
 
         private void DigitGroupingMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -672,5 +672,6 @@ namespace WPFCalculator.Views
                 FileMenu.Visibility = Visibility.Visible;
             }
         }
+        private void OrderOfOperationsMenuItem_Click(object sender, RoutedEventArgs e) { }
     }
 }
